@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Credit Card Fraud Detection System using Graph Neural Networks and Machine Learning for real-time transaction monitoring and analysis.">
+    <title>FraudShield AI — Smart Fraud Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-name">FraudShield</span>
+                    <span class="logo-tag">AI-Powered Detection</span>
+                </div>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active" data-page="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" data-page="transactions">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Transactions</span>
+            </li>
+            <li class="nav-item" data-page="graph">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="15.5" y1="7.5" x2="8.5" y2="16.5"/></svg>
+                <span>Graph View</span>
+            </li>
+            <li class="nav-item" data-page="models">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Model Performance</span>
+            </li>
+            <li class="nav-item" data-page="alerts">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                <span>Alerts</span>
+                <span class="badge" id="alert-badge">0</span>
+            </li>
+            <li class="nav-item" data-page="predict">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                <span>Predict</span>
+            </li>
+            <li class="nav-item" data-page="analytics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Analytics</span>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <span>System Active</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menu-toggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <h1 class="page-title" id="page-title">Dashboard</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" placeholder="Search transactions..." id="global-search">
+                </div>
+                <div class="topbar-info">
+                    <span class="time-display" id="time-display"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page: Dashboard -->
+        <section class="page active" id="page-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card gradient-blue">
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total">—</span>
+                        <span class="stat-label">Total Transactions</span>
+                    </div>
+                </div>
+                <div class="stat-card gradient-red">
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-fraud">—</span>
+                        <span class="stat-label">Fraudulent</span>
+                    </div>
+                </div>
+                <div class="stat-card gradient-green">
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-legit">—</span>
+                        <span class="stat-label">Legitimate</span>
+                    </div>
+                </div>
+                <div class="stat-card gradient-purple">
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-amount">—</span>
+                        <span class="stat-label">Total Volume</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card span-2">
+                    <div class="chart-header">
+                        <h3>Fraud vs Legitimate Transactions by Hour</h3>
+                        <span class="chart-badge">24h Analysis</span>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-hourly"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fraud Rate Overview</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-fraud-rate"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fraud by Merchant Category</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-category"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Transaction Channel Risk</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-channel"></canvas></div>
+                </div>
+            </div>
+
+            <div class="info-cards-grid">
+                <div class="info-card">
+                    <h4>🌍 International Fraud Rate</h4>
+                    <span class="info-value" id="intl-fraud-rate">—</span>
+                </div>
+                <div class="info-card">
+                    <h4>💻 Online Fraud Rate</h4>
+                    <span class="info-value" id="online-fraud-rate">—</span>
+                </div>
+                <div class="info-card">
+                    <h4>💰 Avg Fraud Amount</h4>
+                    <span class="info-value" id="avg-fraud-amt">—</span>
+                </div>
+                <div class="info-card">
+                    <h4>🤖 Models Trained</h4>
+                    <span class="info-value" id="model-count">—</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Transactions -->
+        <section class="page" id="page-transactions">
+            <div class="page-controls">
+                <div class="filter-group">
+                    <button class="filter-btn active" id="filter-all">All Transactions</button>
+                    <button class="filter-btn" id="filter-fraud">Fraud Only</button>
+                </div>
+                <div class="search-inline">
+                    <input type="text" placeholder="Search by Card / Merchant ID..." id="txn-search">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Card</th>
+                            <th>Amount</th>
+                            <th>Category</th>
+                            <th>Time</th>
+                            <th>Day</th>
+                            <th>Intl</th>
+                            <th>Online</th>
+                            <th>Distance</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="txn-body"></tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- Page: Graph View -->
+        <section class="page" id="page-graph">
+            <div class="graph-controls">
+                <div class="graph-legend">
+                    <span class="legend-item"><span class="legend-dot legit"></span> Legitimate</span>
+                    <span class="legend-item"><span class="legend-dot fraud"></span> Fraudulent</span>
+                    <span class="legend-item"><span class="legend-dot edge-card"></span> Same Card</span>
+                    <span class="legend-item"><span class="legend-dot edge-merchant"></span> Same Merchant</span>
+                </div>
+                <div class="graph-stats" id="graph-stats"></div>
+            </div>
+            <div class="graph-container" id="graph-container">
+                <div class="loading-spinner" id="graph-loading">
+                    <div class="spinner"></div>
+                    <p>Building Transaction Graph...</p>
+                </div>
+                <svg id="graph-svg" width="100%" height="100%"></svg>
+            </div>
+            <div class="graph-info-panel" id="graph-info-panel">
+                <h3>Communities Detected</h3>
+                <div id="communities-list"></div>
+            </div>
+        </section>
+
+        <!-- Page: Model Performance -->
+        <section class="page" id="page-models">
+            <div class="models-grid">
+                <div class="chart-card span-2">
+                    <div class="chart-header">
+                        <h3>Model Comparison — Key Metrics</h3>
+                        <span class="chart-badge">All Models</span>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-model-comparison"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>AUC-ROC Comparison</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-auc"></canvas></div>
+                </div>
+            </div>
+            <div class="model-cards" id="model-cards"></div>
+            <div class="gnn-info-card" id="gnn-info-card">
+                <h3>🧠 Graph Neural Network Architecture</h3>
+                <div id="gnn-details"></div>
+            </div>
+        </section>
+
+        <!-- Page: Alerts -->
+        <section class="page" id="page-alerts">
+            <div class="alerts-header">
+                <h2>⚠️ Fraud Alerts</h2>
+                <div class="alert-filters">
+                    <button class="filter-btn active" data-severity="all">All</button>
+                    <button class="filter-btn" data-severity="critical">Critical</button>
+                    <button class="filter-btn" data-severity="high">High</button>
+                    <button class="filter-btn" data-severity="medium">Medium</button>
+                </div>
+            </div>
+            <div class="alerts-list" id="alerts-list"></div>
+        </section>
+
+        <!-- Page: Predict -->
+        <section class="page" id="page-predict">
+            <div class="predict-container">
+                <div class="predict-form-card">
+                    <h2>🔍 Real-Time Fraud Prediction</h2>
+                    <p class="form-description">Enter transaction details to get an instant fraud risk assessment using our ensemble of ML models and GNN.</p>
+                    <form id="predict-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="pred-amount">Transaction Amount ($)</label>
+                                <input type="number" id="pred-amount" step="0.01" min="0" value="250.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-hour">Hour (0-23)</label>
+                                <input type="number" id="pred-hour" min="0" max="23" value="14" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-day">Day of Week (0=Mon)</label>
+                                <input type="number" id="pred-day" min="0" max="6" value="2" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-category">Merchant Category</label>
+                                <select id="pred-category">
+                                    <option value="0">Grocery</option>
+                                    <option value="1">Gas Station</option>
+                                    <option value="2">Restaurant</option>
+                                    <option value="3" selected>Online Retail</option>
+                                    <option value="4">Electronics</option>
+                                    <option value="5">Travel</option>
+                                    <option value="6">Entertainment</option>
+                                    <option value="7">Healthcare</option>
+                                    <option value="8">Utilities</option>
+                                    <option value="9">Education</option>
+                                    <option value="10">ATM</option>
+                                    <option value="11">Jewelry</option>
+                                    <option value="12">Cash Advance</option>
+                                    <option value="13">Wire Transfer</option>
+                                    <option value="14">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-international">International?</label>
+                                <select id="pred-international">
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-online">Online?</label>
+                                <select id="pred-online">
+                                    <option value="0">No</option>
+                                    <option value="1" selected>Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-distance">Distance from Home (km)</label>
+                                <input type="number" id="pred-distance" min="0" value="15" step="0.1">
+                            </div>
+                        </div>
+                        <button type="submit" class="predict-btn" id="predict-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            Analyze Transaction
+                        </button>
+                    </form>
+                </div>
+                <div class="predict-result-card" id="predict-result" style="display:none;">
+                    <div class="result-header" id="result-header">
+                        <div class="risk-gauge" id="risk-gauge"></div>
+                        <div class="risk-info">
+                            <span class="risk-level" id="risk-level">—</span>
+                            <span class="risk-score" id="risk-score">—</span>
+                            <span class="recommendation" id="recommendation">—</span>
+                        </div>
+                    </div>
+                    <div class="result-models" id="result-models"></div>
+                    <div class="result-factors" id="result-factors"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Analytics -->
+        <section class="page" id="page-analytics">
+            <div class="charts-grid">
+                <div class="chart-card span-2">
+                    <div class="chart-header">
+                        <h3>Amount Distribution — Fraud vs Legitimate</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-amount-dist"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fraud by Day of Week</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-day"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fraud by Distance from Home</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-distance"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Online vs Offline Fraud</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-online-offline"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>International vs Domestic</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="chart-intl-domestic"></canvas></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
